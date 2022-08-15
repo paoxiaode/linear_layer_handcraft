@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import os
-ops_library_abs_path = os.path.abspath("./source/build/liboc20_customized_ops.so")
+ops_library_abs_path = os.path.abspath("./source/build/liblinear.so")
 torch.ops.load_library(ops_library_abs_path)
 class linear_relu(nn.Module):
     def __init__(self, in_dim:int, out_dim:int) -> None:
@@ -39,17 +39,28 @@ class linear_relu_naive():
 
     def __call__(self, input):
         input = self.linear(input)
-        return self.relu(input)
+        return input
+
+class linear_relu_op(torch.autograd.Function):
+    def forward(self, input: torch.Tensor, weight: torch.Tensor, bias: torch.Tensor ):
+        output = torch.zeros([input.shape[0],weight.shape[1]]).to("cuda:0")
+        weight_cu = weight.to("cuda:0")
+        input_cu = input.to("cuda:0")
+        bias_cu = bias.to("cuda:0")
+        torch.ops.linear.linear_forward(output, input_cu, weight_cu, bias_cu)
+        return output
 
 def main():
     in_dim = 64
     out_dim = 128
-    M = 100
+    M = 10
     ###############################################
     module_torch = linear_relu(in_dim, out_dim)
     input = torch.rand([M, in_dim])
     output_torch = module_torch(input)
     print(output_torch.shape)
+    print(output_torch.dtype)
+
     ##############################################
     weight = torch.rand([in_dim, out_dim])
     bias = torch.rand([out_dim])
@@ -57,6 +68,9 @@ def main():
     output_naive = module_naive(input)
     print(output_naive.shape)
     #############################################
+    output_op = linear_relu_op.apply(input, weight, bias)
+    print(output_op.shape)
+    print(torch.isclose(output_naive.to("cuda:0"), output_op))
 
 if __name__ == "__main__":
     main()
