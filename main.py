@@ -51,8 +51,8 @@ class linear_relu_op(torch.autograd.Function):
         return output
 
 def main():
-    in_dim = 64
-    out_dim = 128
+    in_dim = 200
+    out_dim = 100
     M = 10
     ###############################################
     module_torch = linear_relu(in_dim, out_dim)

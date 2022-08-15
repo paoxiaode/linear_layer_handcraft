@@ -27,8 +27,11 @@ __global__ void linear_float(
                 tmp += in[bidx * K + k] * weight[k * N + start_idx_y +out_num];
             }
             out[bidx * N + start_idx_y + out_num] = tmp;
-            out_num += 1;
         }
+        else{
+            break;
+        }
+        out_num += 1;
     }
 }
 
