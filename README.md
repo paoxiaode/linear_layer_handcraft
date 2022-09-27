@@ -1,5 +1,7 @@
 # linear_layer_handcraft
 
+Through this repo, we can define our custom op (eg. linear) in CUDA, then bind it to C++ and use it in pytorch.
+
 ## CUDA
 CUDA programming guide https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html
 
