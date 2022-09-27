@@ -29,7 +29,8 @@ Through this repo, we can define our custom op (eg. linear) in CUDA, then bind i
   extension
 
   ```cpp
-  #include <torch/extension.h>TORCH_LIBRARY(linear, m) {
+  #include <torch/extension.h>
+  TORCH_LIBRARY(linear, m) {
     m.def("linear_forward", linear_forward);
   }
   ```
